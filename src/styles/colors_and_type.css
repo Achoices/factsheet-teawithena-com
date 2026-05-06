@@ -1,0 +1,360 @@
+/* vendored from operator-platform/design-system/colors_and_type.css at commit 1e676a3
+   one deviation from byte-identical: 16 @font-face url('fonts/X.ttf') → url('/fonts/X.ttf')
+   (15 self-hosted fonts; Manrope referenced twice for variable + static format fallback).
+   Fonts live at public/fonts/, served by Vite at /fonts/. See README 'Design system sync'. */
+/* ============================================================
+   Tea with Ena — Color & Type Foundations
+   Atelier palette + Spectral / Manrope
+   ============================================================ */
+
+/* All brand fonts loaded locally from /fonts.
+   Spectral: 14 static TTFs (200–800, roman + italic).
+   Manrope: single variable TTF, weight axis 200–800. */
+
+@font-face {
+  font-family: 'Manrope';
+  src: url('/fonts/Manrope-VariableFont_wght.ttf') format('truetype-variations'),
+       url('/fonts/Manrope-VariableFont_wght.ttf') format('truetype');
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/Spectral-ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/Spectral-ExtraLightItalic.ttf') format('truetype');
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/Spectral-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/Spectral-LightItalic.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/Spectral-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/Spectral-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/Spectral-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/Spectral-MediumItalic.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/Spectral-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/Spectral-SemiBoldItalic.ttf') format('truetype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/Spectral-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/Spectral-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/Spectral-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/Spectral-ExtraBoldItalic.ttf') format('truetype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  /* ---------- Atelier palette (locked) ---------- */
+  --surface:        #FBF8F1;  /* page background — warm paper */
+  --ink:            #1C1C1A;  /* primary text */
+  --ink-soft:       #3A3A36;  /* secondary text */
+  --muted:          #6B6A64;  /* meta, captions */
+  --muted-soft:     #A39D8D;  /* placeholder, decorative */
+  --accent:         #A86E52;  /* clay / terracotta — primary accent */
+  --accent-deep:    #7E4E37;  /* hover / pressed accent */
+  --border:         #E6E1D3;  /* hairline */
+  --border-strong:  #CDC6B2;  /* emphasized rule */
+
+  /* ---------- Semantic surfaces ---------- */
+  --bg:             var(--surface);
+  --bg-raised:      #FFFFFF;          /* cards, modals — slight lift from page */
+  --bg-sunken:      #F4EFE3;          /* recessed wells, code blocks */
+  --bg-accent:      #F2E6DD;          /* tinted callout / banner */
+
+  /* ---------- Semantic text ---------- */
+  --fg:             var(--ink);
+  --fg-soft:        var(--ink-soft);
+  --fg-muted:       var(--muted);
+  --fg-placeholder: var(--muted-soft);
+  --fg-accent:      var(--accent-deep);
+  --fg-on-accent:   var(--surface);
+
+  /* ---------- Semantic state (used sparingly) ---------- */
+  --success:        #5C7A4F;
+  --success-bg:     #EAEFE3;
+  --warning:        #B07C2E;
+  --warning-bg:     #F4EAD3;
+  --danger:         #8A3B2C;
+  --danger-bg:      #F1DDD7;
+  --info:           #4F6A7A;
+  --info-bg:        #E1E8EE;
+
+  /* ---------- Typography families ---------- */
+  --font-display:   'Spectral', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-body:      'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:      'JetBrains Mono', ui-monospace, SFMono-Regular, 'Menlo', monospace;
+
+  /* ---------- Type scale (modular, fluid where it matters) ---------- */
+  --text-xs:        0.75rem;   /* 12px — fine print, legal */
+  --text-sm:        0.8125rem; /* 13px — meta, captions */
+  --text-base:      1rem;      /* 16px — body */
+  --text-lg:        1.125rem;  /* 18px — lead paragraph */
+  --text-xl:        1.375rem;  /* 22px — small headings */
+  --text-2xl:       1.75rem;   /* 28px */
+  --text-3xl:       2.25rem;   /* 36px */
+  --text-4xl:       3rem;      /* 48px */
+  --text-5xl:       4rem;      /* 64px — display */
+
+  /* ---------- Line heights ---------- */
+  --leading-tight:  1.15;      /* display headings */
+  --leading-snug:   1.3;       /* sub-headings */
+  --leading-normal: 1.55;      /* body */
+  --leading-relaxed:1.7;       /* long-form / emails */
+
+  /* ---------- Letter spacing ---------- */
+  --tracking-tight:   -0.02em;
+  --tracking-normal:  0;
+  --tracking-wide:    0.04em;
+  --tracking-eyebrow: 0.4em;   /* SIGNATURE — wide-tracked uppercase */
+
+  /* ---------- Spacing (4px base) ---------- */
+  --space-1:  0.25rem;   /* 4 */
+  --space-2:  0.5rem;    /* 8 */
+  --space-3:  0.75rem;   /* 12 */
+  --space-4:  1rem;      /* 16 */
+  --space-5:  1.5rem;    /* 24 */
+  --space-6:  2rem;      /* 32 */
+  --space-7:  2.5rem;    /* 40 */
+  --space-8:  3rem;      /* 48 */
+  --space-9:  4rem;      /* 64 */
+  --space-10: 6rem;      /* 96 */
+  --space-11: 8rem;      /* 128 */
+
+  /* ---------- Radii — restrained ---------- */
+  --radius-none:  0;
+  --radius-sm:    2px;       /* hairline softening only */
+  --radius-md:    4px;       /* inputs, buttons */
+  --radius-lg:    6px;       /* cards */
+  --radius-pill:  999px;     /* used rarely — small tags only */
+
+  /* ---------- Borders ---------- */
+  --hairline:       1px solid var(--border);
+  --rule:           1px solid var(--border-strong);
+  --rule-ink:       1px solid var(--ink);
+
+  /* ---------- Shadows — three elevations, all warm/soft ---------- */
+  --shadow-1: 0 1px 2px rgba(28, 28, 26, 0.04),
+              0 1px 1px rgba(28, 28, 26, 0.03);
+  --shadow-2: 0 2px 6px rgba(28, 28, 26, 0.05),
+              0 4px 12px rgba(28, 28, 26, 0.04);
+  --shadow-3: 0 8px 24px rgba(28, 28, 26, 0.07),
+              0 16px 48px rgba(28, 28, 26, 0.06);
+
+  /* ---------- Motion ---------- */
+  --ease-standard:  cubic-bezier(0.2, 0.0, 0.0, 1.0); /* unhurried entrance */
+  --ease-emphasis:  cubic-bezier(0.4, 0.0, 0.2, 1.0);
+  --ease-exit:      cubic-bezier(0.4, 0.0, 1.0, 1.0);
+  --duration-fast:  120ms;
+  --duration-base:  200ms;
+  --duration-slow:  360ms;
+  --duration-page:  600ms;
+
+  /* ---------- Breakpoints (reference; Tailwind owns enforcement) ---------- */
+  --bp-mobile-max:   639px;
+  --bp-tablet-min:   640px;
+  --bp-tablet-max:   1023px;
+  --bp-desktop-min:  1024px;
+
+  /* ---------- Layout ---------- */
+  --measure-prose:  62ch;    /* comfortable reading column */
+  --measure-form:   40rem;   /* form max width on desktop */
+  --measure-email:  600px;   /* email body container */
+}
+
+/* ============================================================
+   Base + semantic element styles
+   ============================================================ */
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  font-weight: 400;
+}
+
+/* Display headlines — Spectral, generous tracking-tight, light weight */
+.h-display,
+h1.display {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: var(--text-5xl);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--fg);
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-4xl);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--fg);
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-3xl);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--fg);
+}
+
+h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--text-xl);
+  line-height: var(--leading-snug);
+  color: var(--fg);
+}
+
+/* The signature — wide-tracked uppercase Manrope/500 */
+.eyebrow,
+.h-eyebrow {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+p {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: var(--fg-soft);
+  max-width: var(--measure-prose);
+}
+
+p.lead {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+  color: var(--fg);
+  font-style: italic;
+}
+
+small,
+.meta {
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+  letter-spacing: var(--tracking-wide);
+}
+
+a {
+  color: var(--fg-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: var(--border-strong);
+  transition: text-decoration-color var(--duration-base) var(--ease-standard),
+              color var(--duration-base) var(--ease-standard);
+}
+a:hover { text-decoration-color: currentColor; }
+
+hr {
+  border: 0;
+  border-top: var(--hairline);
+  margin: var(--space-7) 0;
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--bg-sunken);
+  padding: 0.1em 0.35em;
+  border-radius: var(--radius-sm);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--surface);
+}

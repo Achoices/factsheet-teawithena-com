@@ -1,0 +1,10 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# SPA fallback so client-side branching on the ?token= query string works
+# from any path the user lands on.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
