@@ -1,12 +1,19 @@
+import { useNavigate } from 'react-router-dom'
 import { PageShell } from '../components/PageShell'
 import { copy, type Locale } from '../lib/i18n'
 
 interface WelcomePageProps {
   locale: Locale
   intervieweeFirstName: string
+  /**
+   * Required so the CTA can carry the token into /form/subject and every
+   * subsequent section route can re-validate it. STEP 2 contract.
+   */
+  token: string
 }
 
-export function WelcomePage({ locale, intervieweeFirstName }: WelcomePageProps) {
+export function WelcomePage({ locale, intervieweeFirstName, token }: WelcomePageProps) {
+  const navigate = useNavigate()
   const t = copy[locale].welcome
   return (
     <PageShell locale={locale} pageEyebrow={t.eyebrow}>
@@ -18,13 +25,11 @@ export function WelcomePage({ locale, intervieweeFirstName }: WelcomePageProps) 
       </p>
       <button
         type="button"
-        className="font-body uppercase tracking-wider text-sm font-medium bg-accent text-surface px-8 py-3 rounded focus-ring opacity-60 cursor-not-allowed"
-        disabled
-        aria-disabled="true"
+        onClick={() => navigate(`/form/subject?token=${encodeURIComponent(token)}`)}
+        className="font-body uppercase tracking-wider text-sm font-medium bg-accent text-surface px-8 py-3 rounded focus-ring hover:bg-accent-deep transition-colors duration-200"
       >
         {t.cta}
       </button>
-      <p className="font-mono text-xs text-muted mt-4 italic">{t.ctaNote}</p>
     </PageShell>
   )
 }

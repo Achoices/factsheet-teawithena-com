@@ -36,7 +36,11 @@ export function useTokenValidation(token: string | null) {
       return data ?? { valid: false, reason: 'server_error' as const }
     },
     enabled: !!token,
-    staleTime: Infinity,
+    // Phase 3: relaxed from Infinity to 5 min so operator-side status changes
+    // (token expiry, force-submit) propagate within a session window.
+    // BACKLOG-FACTSHEET-001 trade-off documented: longer windows = better UX,
+    // shorter = faster propagation. 5 min is the chosen middle ground.
+    staleTime: 5 * 60 * 1000,
     gcTime: Infinity,
     retry: false,
     refetchOnWindowFocus: false,
