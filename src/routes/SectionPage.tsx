@@ -18,6 +18,8 @@ import { SiblingsSection } from './sections/SiblingsSection'
 import { EducationSection } from './sections/EducationSection'
 import { MilitarySection } from './sections/MilitarySection'
 import { CareerSection } from './sections/CareerSection'
+import { RelationshipsSection } from './sections/RelationshipsSection'
+import { ResidencesSection } from './sections/ResidencesSection'
 
 /**
  * STEP 3.1 — Section 01 (Subject) now renders its react-hook-form fields.
@@ -123,7 +125,7 @@ function SectionPageBody({ locale, sectionId, token }: SectionPageBodyProps) {
           {sectionTitle}
         </h1>
 
-        {/* STEP 3.6: Sections 01-08 render real fields. Other 4 sections (relationships, residences, anchors, health) still placeholder. */}
+        {/* STEP 3.8: Sections 01-10 render real fields. Two remaining (anchors, health) still placeholder. */}
         <div className="mb-12">
           {sectionId === 'subject' && <SubjectSection />}
           {sectionId === 'father' && <FatherSection />}
@@ -133,6 +135,8 @@ function SectionPageBody({ locale, sectionId, token }: SectionPageBodyProps) {
           {sectionId === 'education' && <EducationSection />}
           {sectionId === 'military' && <MilitarySection />}
           {sectionId === 'career' && <CareerSection />}
+          {sectionId === 'relationships' && <RelationshipsSection />}
+          {sectionId === 'residences' && <ResidencesSection />}
           {sectionId !== 'subject' &&
             sectionId !== 'father' &&
             sectionId !== 'mother' &&
@@ -140,7 +144,9 @@ function SectionPageBody({ locale, sectionId, token }: SectionPageBodyProps) {
             sectionId !== 'siblings' &&
             sectionId !== 'education' &&
             sectionId !== 'military' &&
-            sectionId !== 'career' && (
+            sectionId !== 'career' &&
+            sectionId !== 'relationships' &&
+            sectionId !== 'residences' && (
               <p className="font-body text-base text-ink-soft leading-relaxed italic">
                 {t.form.placeholderBody}
               </p>

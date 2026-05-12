@@ -98,3 +98,48 @@ export interface NormalizedSiblings {
   count: number | null
   names: string
 }
+
+// ─────────────────────────────────────────────────────────────────────────
+// Section 09 — Relationships (added 5b)
+// ─────────────────────────────────────────────────────────────────────────
+
+export type RelationshipType = 'marriage' | 'partnership' | 'civil_partnership'
+export type DissolutionType = 'ongoing' | 'divorced' | 'widowed'
+
+export interface NormalizedMarriage {
+  partner: string
+  /** YearField — present even when value is null (always-emit canonical contract). */
+  year: YearField
+  location: string
+  relationship_type: RelationshipType
+  dissolution_type: DissolutionType
+  /** ALWAYS PRESENT in payload. When dissolution_type === 'ongoing', normalize
+   * forces this to {value:null,approximate:false} regardless of form state —
+   * semantic truth (ongoing ⇒ no dissolution year) wins over user input. */
+  dissolution_year: YearField
+}
+
+export interface NormalizedChild {
+  name: string
+  birth_year: YearField
+}
+
+export interface NormalizedRelationships {
+  marriages: NormalizedMarriage[]
+  children: NormalizedChild[]
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Section 10 — Residences (added 5b)
+// ─────────────────────────────────────────────────────────────────────────
+
+export interface NormalizedResidenceEntry {
+  city: string
+  country: string
+  start_year: YearField
+  end_year: YearField
+}
+
+export interface NormalizedResidences {
+  entries: NormalizedResidenceEntry[]
+}

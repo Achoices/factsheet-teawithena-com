@@ -10,9 +10,9 @@
 // concentrates conversion in one auditable file. Mirrors operator-platform's
 // Step 4 saveFacts pattern (toYearField/toYearRange applied inside saveFacts).
 //
-// Sections out of 5a scope (relationships, residences, anchors, health) pass
-// through unchanged — they'll fold in during Step 5b once their UI ships.
-// family_context has no year fields, so it also passes through.
+// Sections out of 5b scope (anchors, health) pass through unchanged —
+// they'll fold in during Step 5c once their UI ships. family_context has
+// no year fields, so it also passes through.
 
 import {
   type SubjectFormData,
@@ -23,6 +23,8 @@ import {
   type MilitaryFormData,
   type CareerFormData,
   type SiblingsFormData,
+  type RelationshipsFormData,
+  type ResidencesFormData,
 } from './factSheetSchema'
 import {
   type NormalizedSubject,
@@ -33,6 +35,11 @@ import {
   type NormalizedMilitary,
   type NormalizedCareer,
   type NormalizedSiblings,
+  type NormalizedRelationships,
+  type NormalizedMarriage,
+  type NormalizedChild,
+  type NormalizedResidences,
+  EMPTY_YEAR_FIELD,
 } from './factSheetTypes'
 import { parseYearField, parseYearRange } from './yearFieldHelpers'
 
@@ -150,6 +157,58 @@ export function normalizeSiblings(data: SiblingsFormData): NormalizedSiblings {
   }
 }
 
+// SEMANTIC RULE for dissolution_year (Step 5b drift #4 resolution):
+//   ALWAYS emit the key (canonical contract: payload shape is stable).
+//   When dissolution_type === 'ongoing', force value to EMPTY_YEAR_FIELD
+//   regardless of what the form state holds — semantic truth (ongoing ⇒ no
+//   dissolution) overrides whatever the user typed before toggling. The form
+//   keeps the user's input in state (RHF default shouldUnregister:false) so
+//   flipping back to divorced/widowed restores their value in the UI; this
+//   only affects what hits the persisted payload.
+//
+//   This rule must mirror on operator-platform's phase-4.2 fix — operator's
+//   saveFacts should apply the same null-when-ongoing logic for canonical
+//   consistency across both writers.
+function normalizeMarriage(m: RelationshipsFormData['marriages'][number]): NormalizedMarriage {
+  const dissolutionYear =
+    m.dissolution_type === 'ongoing'
+      ? { ...EMPTY_YEAR_FIELD }
+      : parseYearField(m.dissolution_year)
+  return {
+    partner: m.partner,
+    year: parseYearField(m.year),
+    location: m.location,
+    relationship_type: m.relationship_type,
+    dissolution_type: m.dissolution_type,
+    dissolution_year: dissolutionYear,
+  }
+}
+
+function normalizeChild(c: RelationshipsFormData['children'][number]): NormalizedChild {
+  return {
+    name: c.name,
+    birth_year: parseYearField(c.birth_year),
+  }
+}
+
+export function normalizeRelationships(data: RelationshipsFormData): NormalizedRelationships {
+  return {
+    marriages: data.marriages.map(normalizeMarriage),
+    children: data.children.map(normalizeChild),
+  }
+}
+
+export function normalizeResidences(data: ResidencesFormData): NormalizedResidences {
+  return {
+    entries: data.entries.map((e) => ({
+      city: e.city,
+      country: e.country,
+      start_year: parseYearField(e.start_year),
+      end_year: parseYearField(e.end_year),
+    })),
+  }
+}
+
 // ─────────────────────────────────────────────────────────────────────────
 // Dispatcher
 // ─────────────────────────────────────────────────────────────────────────
@@ -182,8 +241,12 @@ export function normalizeForSave(sectionId: string, data: unknown): unknown {
       return normalizeCareer(data as CareerFormData)
     case 'siblings':
       return normalizeSiblings(data as SiblingsFormData)
-    // Pass-through: no year fields, or section UI not yet shipped (5b folds these in):
-    //   family_context, relationships, residences, anchors, health
+    case 'relationships':
+      return normalizeRelationships(data as RelationshipsFormData)
+    case 'residences':
+      return normalizeResidences(data as ResidencesFormData)
+    // Pass-through: no year fields, or section UI not yet shipped (5c folds these in):
+    //   family_context, anchors, health
     default:
       return data
   }
