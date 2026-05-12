@@ -15,6 +15,7 @@ import { FatherSection } from './sections/FatherSection'
 import { MotherSection } from './sections/MotherSection'
 import { GrandparentsSection } from './sections/GrandparentsSection'
 import { SiblingsSection } from './sections/SiblingsSection'
+import { EducationSection } from './sections/EducationSection'
 
 /**
  * STEP 3.1 — Section 01 (Subject) now renders its react-hook-form fields.
@@ -120,18 +121,20 @@ function SectionPageBody({ locale, sectionId, token }: SectionPageBodyProps) {
           {sectionTitle}
         </h1>
 
-        {/* STEP 3.4: Subject + Father + Mother + Grandparents + Siblings render real fields. Other 7 sections still placeholder. */}
+        {/* STEP 3.5: Sections 01-06 render real fields. Other 6 sections (military, career, relationships, residences, anchors, health) still placeholder. */}
         <div className="mb-12">
           {sectionId === 'subject' && <SubjectSection />}
           {sectionId === 'father' && <FatherSection />}
           {sectionId === 'mother' && <MotherSection />}
           {sectionId === 'grandparents' && <GrandparentsSection />}
           {sectionId === 'siblings' && <SiblingsSection />}
+          {sectionId === 'education' && <EducationSection />}
           {sectionId !== 'subject' &&
             sectionId !== 'father' &&
             sectionId !== 'mother' &&
             sectionId !== 'grandparents' &&
-            sectionId !== 'siblings' && (
+            sectionId !== 'siblings' &&
+            sectionId !== 'education' && (
               <p className="font-body text-base text-ink-soft leading-relaxed italic">
                 {t.form.placeholderBody}
               </p>
