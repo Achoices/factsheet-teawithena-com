@@ -13,6 +13,7 @@ import {
 import { SubjectSection } from './sections/SubjectSection'
 import { FatherSection } from './sections/FatherSection'
 import { MotherSection } from './sections/MotherSection'
+import { GrandparentsSection } from './sections/GrandparentsSection'
 
 /**
  * STEP 3.1 — Section 01 (Subject) now renders its react-hook-form fields.
@@ -118,16 +119,20 @@ function SectionPageBody({ locale, sectionId, token }: SectionPageBodyProps) {
           {sectionTitle}
         </h1>
 
-        {/* STEP 3.2: Subject + Father + Mother render real fields. Other 9 sections still placeholder. */}
+        {/* STEP 3.3: Subject + Father + Mother + Grandparents render real fields. Other 8 sections still placeholder. */}
         <div className="mb-12">
           {sectionId === 'subject' && <SubjectSection />}
           {sectionId === 'father' && <FatherSection />}
           {sectionId === 'mother' && <MotherSection />}
-          {sectionId !== 'subject' && sectionId !== 'father' && sectionId !== 'mother' && (
-            <p className="font-body text-base text-ink-soft leading-relaxed italic">
-              {t.form.placeholderBody}
-            </p>
-          )}
+          {sectionId === 'grandparents' && <GrandparentsSection />}
+          {sectionId !== 'subject' &&
+            sectionId !== 'father' &&
+            sectionId !== 'mother' &&
+            sectionId !== 'grandparents' && (
+              <p className="font-body text-base text-ink-soft leading-relaxed italic">
+                {t.form.placeholderBody}
+              </p>
+            )}
         </div>
 
         <div className="mt-auto flex items-center justify-between gap-4 flex-wrap pt-8 border-t border-rule">
