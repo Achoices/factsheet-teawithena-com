@@ -59,6 +59,12 @@ export const copy = {
         submit: 'Abschicken',
         submitNote: 'wird in Kürze verfügbar',
       },
+      autosave: {
+        idle: '',
+        saving: 'Speichern…',
+        saved: 'Gespeichert',
+        error: 'Fehler beim Speichern',
+      },
     },
     sections: {
       subject: { title: 'Die Person' },
@@ -126,6 +132,12 @@ export const copy = {
         next: 'Save and continue',
         submit: 'Submit',
         submitNote: 'coming soon',
+      },
+      autosave: {
+        idle: '',
+        saving: 'Saving…',
+        saved: 'Saved',
+        error: 'Save failed',
       },
     },
     sections: {
