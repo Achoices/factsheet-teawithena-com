@@ -1,0 +1,98 @@
+/**
+ * RadioGroup styles for Input V1 family.
+ * Authored inline 2026-05-12 for Phase 3.2 (not yet in operator-platform/
+ * design-system/). Token names used match the vendored input.css:
+ *   --surface / --accent / --border-strong / --ink / --bg-sunken /
+ *   --duration-base / --duration-fast / --ease-emphasis / --radius-md /
+ *   --font-body
+ * BACKLOG-DESIGN-SYSTEM-008: formalize this back into the canonical
+ * operator-platform design system as components/radio.css + radio.html
+ * before a third consumer needs it.
+ */
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: background-color var(--duration-fast) var(--ease-emphasis);
+  font-family: var(--font-body);
+}
+
+.radio-option:hover {
+  background: var(--bg-sunken);
+}
+
+.radio-option--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Native input is visually hidden but still receives focus + clicks via the label */
+.radio-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.radio-dot {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  position: relative;
+  transition:
+    border-color var(--duration-base) var(--ease-emphasis),
+    box-shadow var(--duration-base) var(--ease-emphasis);
+}
+
+.radio-option:hover .radio-dot {
+  border-color: var(--ink-soft);
+}
+
+.radio-input:checked + .radio-dot {
+  border-color: var(--accent);
+}
+
+.radio-input:checked + .radio-dot::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.radio-input:focus-visible + .radio-dot {
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent);
+}
+
+.radio-input:disabled + .radio-dot,
+.radio-option--disabled .radio-dot {
+  opacity: 0.5;
+}
+
+.radio-label {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+/* Error state: legend's parent has .input-wrapper aria-invalid; fieldset borders aren't usual,
+   so apply danger border to dots when the wrapper has aria-invalid=true. */
+.input-wrapper[aria-invalid="true"] .radio-dot {
+  border-color: var(--danger);
+}

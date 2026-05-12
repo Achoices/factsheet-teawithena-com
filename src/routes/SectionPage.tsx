@@ -6,7 +6,13 @@ import { SidebarNav } from '../components/SidebarNav'
 import { PageShell } from '../components/PageShell'
 import { ErrorPage } from './ErrorPage'
 import { AutosaveStatusProvider, useAutosaveStatus } from '../lib/autosaveStatusContext'
+import {
+  SectionValidationProvider,
+  useRunSectionValidation,
+} from '../lib/sectionValidationContext'
 import { SubjectSection } from './sections/SubjectSection'
+import { FatherSection } from './sections/FatherSection'
+import { MotherSection } from './sections/MotherSection'
 
 /**
  * STEP 3.1 — Section 01 (Subject) now renders its react-hook-form fields.
@@ -53,14 +59,17 @@ export function SectionPage() {
     return <Navigate to="/error" replace />
   }
 
-  // Token valid — render the section shell with autosave status provider
+  // Token valid — render the section shell with autosave status provider +
+  // section validation provider (so the section can gate "Speichern und weiter").
   return (
     <AutosaveStatusProvider>
-      <SectionPageBody
-        locale={r.interview!.language}
-        sectionId={sectionId}
-        token={token}
-      />
+      <SectionValidationProvider>
+        <SectionPageBody
+          locale={r.interview!.language}
+          sectionId={sectionId}
+          token={token}
+        />
+      </SectionValidationProvider>
     </AutosaveStatusProvider>
   )
 }
@@ -73,14 +82,22 @@ interface SectionPageBodyProps {
 
 function SectionPageBody({ locale, sectionId, token }: SectionPageBodyProps) {
   const navigate = useNavigate()
+  const runValidation = useRunSectionValidation()
   const t = copy[locale]
   const idx = sectionIndex(sectionId)
   const prev = prevSectionId(sectionId)
   const next = nextSectionId(sectionId)
   const sectionTitle = t.sections[sectionId].title
 
+  // Prev never validates — we don't punish users for going back.
   const goPrev = () => prev && navigate(`/form/${prev}?token=${encodeURIComponent(token)}`)
-  const goNext = () => next && navigate(`/form/${next}?token=${encodeURIComponent(token)}`)
+  // Next awaits the section's validate() (registered via useSetSectionValidator);
+  // if no validator is registered (still-placeholder sections), navigation proceeds.
+  const goNext = async () => {
+    if (!next) return
+    const ok = await runValidation()
+    if (ok) navigate(`/form/${next}?token=${encodeURIComponent(token)}`)
+  }
 
   return (
     <div className="min-h-screen bg-surface text-ink flex flex-col md:flex-row">
@@ -101,11 +118,12 @@ function SectionPageBody({ locale, sectionId, token }: SectionPageBodyProps) {
           {sectionTitle}
         </h1>
 
-        {/* STEP 3.1: Subject renders real fields; other 11 sections still show placeholder */}
+        {/* STEP 3.2: Subject + Father + Mother render real fields. Other 9 sections still placeholder. */}
         <div className="mb-12">
-          {sectionId === 'subject' ? (
-            <SubjectSection />
-          ) : (
+          {sectionId === 'subject' && <SubjectSection />}
+          {sectionId === 'father' && <FatherSection />}
+          {sectionId === 'mother' && <MotherSection />}
+          {sectionId !== 'subject' && sectionId !== 'father' && sectionId !== 'mother' && (
             <p className="font-body text-base text-ink-soft leading-relaxed italic">
               {t.form.placeholderBody}
             </p>

@@ -82,16 +82,18 @@ export type FatherFormData = z.infer<typeof fatherSchema>
 export type MotherFormData = z.infer<typeof motherSchema>
 
 // =========================================================================
-// Inline (between 02 and 03) — Parent Relationship
+// Family Context (inline between 02 Father and 03 Mother)
+// Renamed from parentRelationshipSchema → familyContextSchema in STEP 3.2.
+// Stored at biographical_facts.family_context.
 // =========================================================================
-export const parentRelationshipSchema = z.object({
+export const familyContextSchema = z.object({
   most_influential_parent: z.union([
     z.enum(['father', 'mother', 'both', 'neither']),
     z.literal(''),
   ]),
-  parent_relationship_note: optionalText,
+  parent_relationship_note: z.string().max(1000, ERR_SKETCH_MAX),
 })
-export type ParentRelationshipFormData = z.infer<typeof parentRelationshipSchema>
+export type FamilyContextFormData = z.infer<typeof familyContextSchema>
 
 // =========================================================================
 // Section 04 — Grandparents (4 explicit entries)
@@ -234,7 +236,7 @@ export type HealthFormData = z.infer<typeof healthSchema>
 export const biographicalFactsSchema = z.object({
   subject: subjectSchema.optional(),
   father: fatherSchema.optional(),
-  parent_relationship: parentRelationshipSchema.optional(),
+  family_context: familyContextSchema.optional(),
   mother: motherSchema.optional(),
   grandparents: grandparentsSchema.optional(),
   siblings: siblingsSchema.optional(),

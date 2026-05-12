@@ -1,8 +1,10 @@
+import { useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { subjectSchema, type SubjectFormData } from '../../lib/factSheetSchema'
 import { useFactSheetAutosave } from '../../hooks/useFactSheetAutosave'
 import { saveFactSheetSection } from '../../lib/factSheetSave'
+import { useSetSectionValidator } from '../../lib/sectionValidationContext'
 import { TextInput, Textarea } from '../../design-system/components/Input'
 
 const EMPTY: SubjectFormData = {
@@ -18,24 +20,26 @@ const EMPTY: SubjectFormData = {
 }
 
 export function SubjectSection() {
-  const {
-    register,
-    formState: { errors },
-    watch,
-  } = useForm<SubjectFormData>({
+  const form = useForm<SubjectFormData>({
     resolver: zodResolver(subjectSchema),
     defaultValues: EMPTY,
     mode: 'onBlur',
   })
+  const { register, formState: { errors } } = form
 
   // watch() returns the live form values; useFactSheetAutosave debounces on
   // content change and pushes status into AutosaveStatusContext.
-  const watched = watch()
+  const watched = form.watch()
   useFactSheetAutosave<SubjectFormData>({
     sectionId: 'subject',
     data: watched,
     saveFunction: saveFactSheetSection,
   })
+
+  // STEP 3.2: register a validator so SectionPage's "Speichern und weiter"
+  // blocks navigation when required fields are empty / invalid.
+  const validate = useCallback(() => form.trigger(), [form])
+  useSetSectionValidator(validate)
 
   return (
     <form className="space-y-6" noValidate>
