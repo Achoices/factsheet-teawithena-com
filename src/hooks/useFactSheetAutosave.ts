@@ -25,6 +25,12 @@ interface UseFactSheetAutosaveOptions<T> {
  *
  * Initial-render guard: skips the first effect run so a just-mounted form
  * with default-empty values doesn't fire an autosave immediately.
+ *
+ * PERSISTENCE SHAPE: the `data` passed here is the live RHF watch() output —
+ * string-shaped per the section's Zod schema (no .transform()). The boundary
+ * conversion to canonical YearField/YearRange/ISO-date shapes happens inside
+ * `saveFunction` (saveFactSheetSection → normalizeForSave). The hook itself
+ * is shape-agnostic.
  */
 export function useFactSheetAutosave<T>({
   sectionId,
