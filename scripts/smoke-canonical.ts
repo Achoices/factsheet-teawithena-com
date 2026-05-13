@@ -9,6 +9,8 @@
 //   Step 5a — subject, father, education, military, career, grandparents, siblings
 //   Step 5b — adds relationships (marriages + children) + residences,
 //             including the ongoing-dissolution_year null-emit rule.
+//   Step 3.9 — adds anchors (passthrough) + health (pacing + cognitive_adaptations
+//              array + max_session_minutes int coercion + health_notes).
 
 import { normalizeForSave } from '../src/lib/normalizeSection'
 
@@ -365,6 +367,103 @@ check(
   'residences',
   {
     entries: [{ city: '', country: '', start_year: '', end_year: '' }],
+  },
+)
+
+// ═══════════════════════════════════════════════════════════════════════
+// Phase 3.9 additions — Anchors + Health
+// ═══════════════════════════════════════════════════════════════════════
+
+// A1. Anchors all four fields populated → passthrough verbatim
+check(
+  '#A1 Anchors all four fields populated → passthrough verbatim',
+  'anchors',
+  {
+    first_car_make_model: 'VW Käfer 1303 (1978)',
+    lifelong_passion: 'Garten und Imkerei',
+    major_trip: 'Sechs Monate Australien, 1985',
+    special_possessions: 'Großvaters Taschenuhr; ein Brief aus dem Krieg',
+  },
+)
+
+// A2. Anchors all empty → identity passthrough with empty strings
+check(
+  '#A2 Anchors all-empty → identity passthrough with empty strings',
+  'anchors',
+  {
+    first_car_make_model: '',
+    lifelong_passion: '',
+    major_trip: '',
+    special_possessions: '',
+  },
+)
+
+// H1. Health full — pacing canonical enum, cognitive_adaptations array preserved,
+//     max_session_minutes coerced string→int, health_notes passthrough
+check(
+  '#H1 Health full — pacing+cog_adapt[2]+max_session=75+notes → canonical with int 75',
+  'health',
+  {
+    pacing: 'full_pace',
+    cognitive_adaptations: ['short_sentences', 'extra_time'],
+    max_session_minutes: '75',
+    health_notes: 'Morgens am besten ansprechbar; nach 16:00 wird sie müde.',
+  },
+)
+
+// H2. Health all empty → pacing:'' + empty array + null minutes + empty notes
+check(
+  '#H2 Health all-empty → pacing:"" + [] + max_session_minutes:null + notes:""',
+  'health',
+  {
+    pacing: '',
+    cognitive_adaptations: [],
+    max_session_minutes: '',
+    health_notes: '',
+  },
+)
+
+// H3. Health partial — pacing='moderate', cog_adapt=['visual_aids'] only
+check(
+  '#H3 Health partial — pacing=moderate + cog_adapt=[visual_aids] only',
+  'health',
+  {
+    pacing: 'moderate',
+    cognitive_adaptations: ['visual_aids'],
+    max_session_minutes: '',
+    health_notes: '',
+  },
+)
+
+// H4 (bonus). All 5 canonical cognitive_adaptation values selected — array order preserved.
+check(
+  '#H4 (bonus) All 5 cognitive_adaptations selected → array preserved verbatim',
+  'health',
+  {
+    pacing: 'slow_with_breaks',
+    cognitive_adaptations: [
+      'short_sentences',
+      'repeat_key_points',
+      'visual_aids',
+      'written_summaries',
+      'extra_time',
+    ],
+    max_session_minutes: '45',
+    health_notes: '',
+  },
+)
+
+// H5 (bonus). max_session_minutes = '0' → parseIntOrNull returns 0 (not null).
+//   Note: '0' is not a sensible session length, but the harness verifies the
+//   helper's actual behavior — Number.isFinite-based, not truthiness-based.
+check(
+  '#H5 (bonus) max_session_minutes="0" → parseIntOrNull returns 0 (Number.isFinite, not truthy-coerced)',
+  'health',
+  {
+    pacing: '',
+    cognitive_adaptations: [],
+    max_session_minutes: '0',
+    health_notes: '',
   },
 )
 

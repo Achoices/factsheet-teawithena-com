@@ -1,0 +1,111 @@
+/**
+ * CheckboxGroup styles for Input V1 family.
+ * Authored inline 2026-05-13 for Phase 3.9 Health.cognitive_adaptations.
+ * Token names mirror RadioGroup.css (same Input V1 palette):
+ *   --surface / --accent / --border-strong / --ink / --bg-sunken /
+ *   --duration-base / --duration-fast / --ease-emphasis / --radius-md /
+ *   --font-body / --danger
+ * BACKLOG-DESIGN-SYSTEM-007: formalize this back into the canonical
+ * operator-platform design system as components/checkbox.{css,html}.
+ *
+ * Visual distinction from RadioGroup: square marker (not circle) with
+ * a CSS-only checkmark (rotated border-right + border-bottom) when checked.
+ */
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.checkbox-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: background-color var(--duration-fast) var(--ease-emphasis);
+  font-family: var(--font-body);
+}
+
+.checkbox-option:hover {
+  background: var(--bg-sunken);
+}
+
+.checkbox-option--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Native input is visually hidden but still receives focus + clicks via the label */
+.checkbox-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.checkbox-box {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  position: relative;
+  transition:
+    border-color var(--duration-base) var(--ease-emphasis),
+    background-color var(--duration-base) var(--ease-emphasis),
+    box-shadow var(--duration-base) var(--ease-emphasis);
+}
+
+.checkbox-option:hover .checkbox-box {
+  border-color: var(--ink-soft);
+}
+
+.checkbox-input:checked + .checkbox-box {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+/* CSS-only checkmark: rotated rectangle with two visible borders forms a tick.
+   Anchored relative to the 18×18 box; ratios picked to feel optically centred. */
+.checkbox-input:checked + .checkbox-box::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 4px;
+  height: 9px;
+  border: solid var(--surface);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-input:focus-visible + .checkbox-box {
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent);
+}
+
+.checkbox-input:disabled + .checkbox-box,
+.checkbox-option--disabled .checkbox-box {
+  opacity: 0.5;
+}
+
+.checkbox-label {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+/* Error state mirrors RadioGroup: when wrapper is aria-invalid, mark border red. */
+.input-wrapper[aria-invalid="true"] .checkbox-box {
+  border-color: var(--danger);
+}
+
+.input-wrapper[aria-invalid="true"] .checkbox-input:checked + .checkbox-box {
+  background: var(--danger);
+}

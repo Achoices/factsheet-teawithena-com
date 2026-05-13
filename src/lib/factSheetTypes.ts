@@ -143,3 +143,35 @@ export interface NormalizedResidenceEntry {
 export interface NormalizedResidences {
   entries: NormalizedResidenceEntry[]
 }
+
+// ─────────────────────────────────────────────────────────────────────────
+// Section 11 — Anchors (added 3.9; pure passthrough — no year/coercion)
+// ─────────────────────────────────────────────────────────────────────────
+
+export interface NormalizedAnchors {
+  first_car_make_model: string
+  lifelong_passion: string
+  major_trip: string
+  special_possessions: string
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Section 12 — Health (added 3.9)
+// ─────────────────────────────────────────────────────────────────────────
+
+export type PacingValue = 'full_pace' | 'moderate' | 'slow_with_breaks' | ''
+export type CognitiveAdaptation =
+  | 'short_sentences'
+  | 'repeat_key_points'
+  | 'visual_aids'
+  | 'written_summaries'
+  | 'extra_time'
+
+export interface NormalizedHealth {
+  pacing: PacingValue
+  cognitive_adaptations: CognitiveAdaptation[]
+  /** Form state is a `^\d{1,3}$` string OR '' — normalize coerces to int|null
+   * via the shared parseIntOrNull helper. */
+  max_session_minutes: number | null
+  health_notes: string
+}

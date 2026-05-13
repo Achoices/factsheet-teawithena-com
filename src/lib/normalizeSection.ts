@@ -10,9 +10,9 @@
 // concentrates conversion in one auditable file. Mirrors operator-platform's
 // Step 4 saveFacts pattern (toYearField/toYearRange applied inside saveFacts).
 //
-// Sections out of 5b scope (anchors, health) pass through unchanged —
-// they'll fold in during Step 5c once their UI ships. family_context has
-// no year fields, so it also passes through.
+// Phase 3 STEP 3.9 closes the section-by-section retrofit: anchors + health
+// are the last two sections. family_context (no year fields, no coercion)
+// remains the only passthrough case in the dispatcher.
 
 import {
   type SubjectFormData,
@@ -25,6 +25,8 @@ import {
   type SiblingsFormData,
   type RelationshipsFormData,
   type ResidencesFormData,
+  type AnchorsFormData,
+  type HealthFormData,
 } from './factSheetSchema'
 import {
   type NormalizedSubject,
@@ -39,6 +41,8 @@ import {
   type NormalizedMarriage,
   type NormalizedChild,
   type NormalizedResidences,
+  type NormalizedAnchors,
+  type NormalizedHealth,
   EMPTY_YEAR_FIELD,
 } from './factSheetTypes'
 import { parseYearField, parseYearRange } from './yearFieldHelpers'
@@ -209,6 +213,37 @@ export function normalizeResidences(data: ResidencesFormData): NormalizedResiden
   }
 }
 
+// Anchors: pure identity. Kept as an explicit normalizer for dispatcher
+// self-documentation — matches the "every shipped section has a normalize*"
+// pattern even when no coercion is needed.
+export function normalizeAnchors(data: AnchorsFormData): NormalizedAnchors {
+  return {
+    first_car_make_model: data.first_car_make_model,
+    lifelong_passion: data.lifelong_passion,
+    major_trip: data.major_trip,
+    special_possessions: data.special_possessions,
+  }
+}
+
+// Health: max_session_minutes goes through parseIntOrNull (same pattern as
+// siblings.count). pacing + cognitive_adaptations + health_notes pass through;
+// schemas already restrict pacing to {'full_pace','moderate','slow_with_breaks',''}
+// and cognitive_adaptations to a 5-value enum array.
+//
+// Canonical-enum asymmetry: factsheet writes the canonical 5-value
+// cognitive_adaptations enum. Operator-platform's UI currently emits a
+// 3-value legacy enum; tracked under BACKLOG-HEALTH-COGNITIVE-ADAPTATIONS-001
+// and must be relabeled before Step 6 ships the customer-facing save endpoint
+// (otherwise operator can't display values factsheet emits).
+export function normalizeHealth(data: HealthFormData): NormalizedHealth {
+  return {
+    pacing: data.pacing,
+    cognitive_adaptations: [...data.cognitive_adaptations],
+    max_session_minutes: parseIntOrNull(data.max_session_minutes),
+    health_notes: data.health_notes,
+  }
+}
+
 // ─────────────────────────────────────────────────────────────────────────
 // Dispatcher
 // ─────────────────────────────────────────────────────────────────────────
@@ -245,8 +280,11 @@ export function normalizeForSave(sectionId: string, data: unknown): unknown {
       return normalizeRelationships(data as RelationshipsFormData)
     case 'residences':
       return normalizeResidences(data as ResidencesFormData)
-    // Pass-through: no year fields, or section UI not yet shipped (5c folds these in):
-    //   family_context, anchors, health
+    case 'anchors':
+      return normalizeAnchors(data as AnchorsFormData)
+    case 'health':
+      return normalizeHealth(data as HealthFormData)
+    // Pass-through: family_context (no year fields, no coercion).
     default:
       return data
   }

@@ -20,6 +20,8 @@ import { MilitarySection } from './sections/MilitarySection'
 import { CareerSection } from './sections/CareerSection'
 import { RelationshipsSection } from './sections/RelationshipsSection'
 import { ResidencesSection } from './sections/ResidencesSection'
+import { AnchorsSection } from './sections/AnchorsSection'
+import { HealthSection } from './sections/HealthSection'
 
 /**
  * STEP 3.1 — Section 01 (Subject) now renders its react-hook-form fields.
@@ -125,7 +127,7 @@ function SectionPageBody({ locale, sectionId, token }: SectionPageBodyProps) {
           {sectionTitle}
         </h1>
 
-        {/* STEP 3.8: Sections 01-10 render real fields. Two remaining (anchors, health) still placeholder. */}
+        {/* STEP 3.9: All 12 sections render real fields. Placeholder fallback retained as a defensive no-op. */}
         <div className="mb-12">
           {sectionId === 'subject' && <SubjectSection />}
           {sectionId === 'father' && <FatherSection />}
@@ -137,6 +139,8 @@ function SectionPageBody({ locale, sectionId, token }: SectionPageBodyProps) {
           {sectionId === 'career' && <CareerSection />}
           {sectionId === 'relationships' && <RelationshipsSection />}
           {sectionId === 'residences' && <ResidencesSection />}
+          {sectionId === 'anchors' && <AnchorsSection />}
+          {sectionId === 'health' && <HealthSection />}
           {sectionId !== 'subject' &&
             sectionId !== 'father' &&
             sectionId !== 'mother' &&
@@ -146,7 +150,9 @@ function SectionPageBody({ locale, sectionId, token }: SectionPageBodyProps) {
             sectionId !== 'military' &&
             sectionId !== 'career' &&
             sectionId !== 'relationships' &&
-            sectionId !== 'residences' && (
+            sectionId !== 'residences' &&
+            sectionId !== 'anchors' &&
+            sectionId !== 'health' && (
               <p className="font-body text-base text-ink-soft leading-relaxed italic">
                 {t.form.placeholderBody}
               </p>
