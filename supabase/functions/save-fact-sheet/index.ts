@@ -71,14 +71,17 @@ function json(body: unknown, status: number, origin: string | null): Response {
 
 // ── Canonical building blocks ──────────────────────────────────────
 // Mirror src/lib/factSheetTypes.ts YearField/YearRange.
+// Phase A.1: every object schema is .strict() — unknown keys at any nesting
+// level (top-level section, sub-entry inside arrays, building-block YF/YR)
+// reject with 422 + reason:'validation_failed' + errors[].code:'unrecognized_keys'.
 const YearFieldSchema = z.object({
   value: z.number().int().nullable(),
   approximate: z.boolean(),
-})
+}).strict()
 const YearRangeSchema = z.object({
   start: YearFieldSchema,
   end: YearFieldSchema.nullable(),
-})
+}).strict()
 
 // ── Section schemas (mirror Normalized* interfaces) ────────────────
 
@@ -94,7 +97,7 @@ const SubjectSchema = z.object({
   nationality: z.string(),
   mother_tongue: z.string(),
   subject_character_sketch: z.string(),
-})
+}).strict()
 
 const ParentSchema = z.object({
   name: z.string(),
@@ -102,7 +105,7 @@ const ParentSchema = z.object({
   birth_year: YearFieldSchema,
   death_year: YearFieldSchema,
   profession: z.string(),
-})
+}).strict()
 
 const FamilyContextSchema = z.object({
   most_influential_parent: z.union([
@@ -110,46 +113,46 @@ const FamilyContextSchema = z.object({
     z.literal(''),
   ]),
   parent_relationship_note: z.string(),
-})
+}).strict()
 
 const GrandparentSchema = z.object({
   name: z.string(),
   birth_year: YearFieldSchema,
   death_year: YearFieldSchema,
-})
+}).strict()
 const GrandparentsSchema = z.object({
   paternal_grandfather: GrandparentSchema,
   paternal_grandmother: GrandparentSchema,
   maternal_grandfather: GrandparentSchema,
   maternal_grandmother: GrandparentSchema,
-})
+}).strict()
 
 const SiblingsSchema = z.object({
   count: z.number().int().nullable(),
   names: z.string(),
-})
+}).strict()
 
 const EducationEntrySchema = z.object({
   institution: z.string(),
   field: z.string(),
   start_year: YearFieldSchema,
   end_year: YearFieldSchema,
-})
-const EducationSchema = z.object({ entries: z.array(EducationEntrySchema) })
+}).strict()
+const EducationSchema = z.object({ entries: z.array(EducationEntrySchema) }).strict()
 
 const MilitarySchema = z.object({
   served: z.boolean(),
   branch: z.string(),
   years: YearRangeSchema,
-})
+}).strict()
 
 const CareerStationSchema = z.object({
   employer: z.string(),
   role: z.string(),
   location: z.string(),
   years: YearRangeSchema,
-})
-const CareerSchema = z.object({ stations: z.array(CareerStationSchema).max(4) })
+}).strict()
+const CareerSchema = z.object({ stations: z.array(CareerStationSchema).max(4) }).strict()
 
 // Marriages: always-emit dissolution_year per phase-4.2 mirror + Step 5b drift #4
 // (forced {value:null,approximate:false} when dissolution_type === 'ongoing').
@@ -160,30 +163,30 @@ const MarriageSchema = z.object({
   relationship_type: z.enum(['marriage', 'partnership', 'civil_partnership']),
   dissolution_type: z.enum(['ongoing', 'divorced', 'widowed']),
   dissolution_year: YearFieldSchema,
-})
+}).strict()
 const ChildSchema = z.object({
   name: z.string(),
   birth_year: YearFieldSchema,
-})
+}).strict()
 const RelationshipsSchema = z.object({
   marriages: z.array(MarriageSchema).max(3),
   children: z.array(ChildSchema).max(5),
-})
+}).strict()
 
 const ResidenceEntrySchema = z.object({
   city: z.string(),
   country: z.string(),
   start_year: YearFieldSchema,
   end_year: YearFieldSchema,
-})
-const ResidencesSchema = z.object({ entries: z.array(ResidenceEntrySchema) })
+}).strict()
+const ResidencesSchema = z.object({ entries: z.array(ResidenceEntrySchema) }).strict()
 
 const AnchorsSchema = z.object({
   first_car_make_model: z.string(),
   lifelong_passion: z.string(),
   major_trip: z.string(),
   special_possessions: z.string(),
-})
+}).strict()
 
 // Health pacing: A2 canonical 3-value enum + ''. cognitive_adaptations: 5-value
 // canonical enum array. max_session_minutes: int|null (coerced from string at client).
@@ -201,7 +204,7 @@ const HealthSchema = z.object({
   ])),
   max_session_minutes: z.number().int().nullable(),
   health_notes: z.string(),
-})
+}).strict()
 
 const SECTION_SCHEMAS: Record<string, z.ZodTypeAny> = {
   subject: SubjectSchema,
