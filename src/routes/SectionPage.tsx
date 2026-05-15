@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useTokenValidation } from '../hooks/useTokenValidation'
 import { copy, defaultLocale, type Locale } from '../lib/i18n'
@@ -10,6 +11,9 @@ import {
   SectionValidationProvider,
   useRunSectionValidation,
 } from '../lib/sectionValidationContext'
+import { AutosaveFlushProvider, useRunAutosaveFlush } from '../lib/autosaveFlushContext'
+import { FactSheetTokenProvider } from '../lib/factSheetTokenContext'
+import { submitFactSheet } from '../lib/factSheetSave'
 import { SubjectSection } from './sections/SubjectSection'
 import { FatherSection } from './sections/FatherSection'
 import { MotherSection } from './sections/MotherSection'
@@ -68,18 +72,26 @@ export function SectionPage() {
     return <Navigate to="/error" replace />
   }
 
-  // Token valid — render the section shell with autosave status provider +
-  // section validation provider (so the section can gate "Speichern und weiter").
+  // Token valid — render the section shell with all providers:
+  //  - FactSheetTokenProvider: makes the magic-link token available to
+  //    useSaveFactSheetSection() inside every section component.
+  //  - AutosaveStatusProvider: drives the "Speichern…" indicator.
+  //  - SectionValidationProvider: gates "Speichern und weiter" navigation.
+  //  - AutosaveFlushProvider: lets Abschicken drain pending autosave (D-EF3).
   return (
-    <AutosaveStatusProvider>
-      <SectionValidationProvider>
-        <SectionPageBody
-          locale={r.interview!.language}
-          sectionId={sectionId}
-          token={token}
-        />
-      </SectionValidationProvider>
-    </AutosaveStatusProvider>
+    <FactSheetTokenProvider token={token}>
+      <AutosaveStatusProvider>
+        <SectionValidationProvider>
+          <AutosaveFlushProvider>
+            <SectionPageBody
+              locale={r.interview!.language}
+              sectionId={sectionId}
+              token={token}
+            />
+          </AutosaveFlushProvider>
+        </SectionValidationProvider>
+      </AutosaveStatusProvider>
+    </FactSheetTokenProvider>
   )
 }
 
@@ -92,6 +104,8 @@ interface SectionPageBodyProps {
 function SectionPageBody({ locale, sectionId, token }: SectionPageBodyProps) {
   const navigate = useNavigate()
   const runValidation = useRunSectionValidation()
+  const runFlush = useRunAutosaveFlush()
+  const [submitting, setSubmitting] = useState(false)
   const t = copy[locale]
   const idx = sectionIndex(sectionId)
   const prev = prevSectionId(sectionId)
@@ -106,6 +120,25 @@ function SectionPageBody({ locale, sectionId, token }: SectionPageBodyProps) {
     if (!next) return
     const ok = await runValidation()
     if (ok) navigate(`/form/${next}?token=${encodeURIComponent(token)}`)
+  }
+
+  // Phase B Abschicken (D-EF3 + D-FS1 + D-FS2): drain any pending autosave,
+  // then POST {token, submitted:true}, then navigate to /submitted.
+  // No cross-section completeness gate — Edge Function 422s a missing-required
+  // payload, and the form already requires Subject.full_name + place_of_birth
+  // + birth_year via Zod onBlur (the form rests in autosave-driven persistence).
+  const handleSubmit = async () => {
+    if (submitting) return
+    setSubmitting(true)
+    try {
+      await runFlush()
+      await submitFactSheet(token)
+      navigate('/submitted')
+    } catch (err) {
+      console.error('[Abschicken] submit failed:', err)
+      // Surface via autosave error banner; submit state resets so user can retry.
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -181,17 +214,20 @@ function SectionPageBody({ locale, sectionId, token }: SectionPageBodyProps) {
               {t.form.nav.next} →
             </button>
           ) : (
-            <span className="flex items-baseline gap-3 flex-wrap">
-              <button
-                type="button"
-                disabled
-                aria-disabled="true"
-                className="font-body uppercase tracking-wider text-sm font-medium bg-accent text-surface px-8 py-3 rounded opacity-60 cursor-not-allowed"
-              >
-                {t.form.nav.submit}
-              </button>
-              <span className="font-mono text-[11px] text-muted italic">{t.form.nav.submitNote}</span>
-            </span>
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={submitting}
+              aria-busy={submitting || undefined}
+              className={[
+                'font-body uppercase tracking-wider text-sm font-medium bg-accent text-surface px-8 py-3 rounded focus-ring transition-colors duration-200',
+                submitting
+                  ? 'opacity-60 cursor-not-allowed'
+                  : 'hover:bg-accent-deep',
+              ].join(' ')}
+            >
+              {submitting ? t.form.nav.submitting : t.form.nav.submit}
+            </button>
           )}
         </div>
       </main>

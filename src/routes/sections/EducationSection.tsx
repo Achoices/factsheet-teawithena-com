@@ -3,7 +3,8 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { educationSchema, type EducationFormData } from '../../lib/factSheetSchema'
 import { useFactSheetAutosave } from '../../hooks/useFactSheetAutosave'
-import { saveFactSheetSection } from '../../lib/factSheetSave'
+import { useSaveFactSheetSection } from '../../lib/factSheetSave'
+import { zodPathToRhfName } from '../../lib/zodPathToRhfName'
 import { useSetSectionValidator } from '../../lib/sectionValidationContext'
 import { TextInput } from '../../design-system/components/Input'
 
@@ -33,10 +34,18 @@ export function EducationSection() {
     name: 'entries',
   })
 
+  const save = useSaveFactSheetSection()
+
   useFactSheetAutosave<EducationFormData>({
     sectionId: 'education',
     data: form.watch(),
-    saveFunction: saveFactSheetSection,
+    saveFunction: save,
+    onValidationError: (errors) => {
+      errors.forEach((err) => {
+        const name = zodPathToRhfName(err.path)
+        if (name) form.setError(name as never, { type: 'server', message: err.message })
+      })
+    },
   })
 
   const validate = useCallback(() => form.trigger(), [form])

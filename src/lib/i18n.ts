@@ -48,6 +48,11 @@ export const copy = {
       retry: 'Erneut versuchen',
       contact: CONTACT_EMAIL,
     },
+    submitted: {
+      eyebrow: 'Faktenblatt',
+      heading: 'Vielen Dank.',
+      body: 'Vielen Dank — der Bogen ist bei uns angekommen. Wir kümmern uns ab hier um alles Weitere.',
+    },
     form: {
       eyebrow: 'Faktenblatt',
       progress: (current: number, total: number) => `Abschnitt ${current} von ${total}`,
@@ -57,7 +62,7 @@ export const copy = {
         prev: 'Zurück',
         next: 'Speichern und weiter',
         submit: 'Abschicken',
-        submitNote: 'wird in Kürze verfügbar',
+        submitting: 'Wird gesendet…',
       },
       autosave: {
         idle: '',
@@ -122,6 +127,11 @@ export const copy = {
       retry: 'Try again',
       contact: CONTACT_EMAIL,
     },
+    submitted: {
+      eyebrow: 'Fact sheet',
+      heading: 'Thank you.',
+      body: "Thank you — the fact sheet has reached us. We'll take it from here.",
+    },
     form: {
       eyebrow: 'Fact sheet',
       progress: (current: number, total: number) => `Section ${current} of ${total}`,
@@ -131,7 +141,7 @@ export const copy = {
         prev: 'Back',
         next: 'Save and continue',
         submit: 'Submit',
-        submitNote: 'coming soon',
+        submitting: 'Sending…',
       },
       autosave: {
         idle: '',

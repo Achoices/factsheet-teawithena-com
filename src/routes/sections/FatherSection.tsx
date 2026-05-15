@@ -8,8 +8,9 @@ import {
   type FamilyContextFormData,
 } from '../../lib/factSheetSchema'
 import { useFactSheetAutosave } from '../../hooks/useFactSheetAutosave'
-import { saveFactSheetSection } from '../../lib/factSheetSave'
+import { useSaveFactSheetSection } from '../../lib/factSheetSave'
 import { useSetSectionValidator } from '../../lib/sectionValidationContext'
+import { zodPathToRhfName } from '../../lib/zodPathToRhfName'
 import { TextInput, Textarea, RadioGroup } from '../../design-system/components/Input'
 
 const EMPTY_FATHER: FatherFormData = {
@@ -50,15 +51,28 @@ export function FatherSection() {
   // STEP 4 attention: when saveFunction becomes real, an error in one form
   // followed by success in the other can mask the failure visually. Plan to
   // refactor AutosaveStatusContext to be section-keyed at that point.
+  const save = useSaveFactSheetSection()
   useFactSheetAutosave<FatherFormData>({
     sectionId: 'father',
     data: fatherForm.watch(),
-    saveFunction: saveFactSheetSection,
+    saveFunction: save,
+    onValidationError: (errors) => {
+      errors.forEach((err) => {
+        const name = zodPathToRhfName(err.path)
+        if (name) fatherForm.setError(name as never, { type: 'server', message: err.message })
+      })
+    },
   })
   useFactSheetAutosave<FamilyContextFormData>({
     sectionId: 'family_context',
     data: familyContextForm.watch(),
-    saveFunction: saveFactSheetSection,
+    saveFunction: save,
+    onValidationError: (errors) => {
+      errors.forEach((err) => {
+        const name = zodPathToRhfName(err.path)
+        if (name) familyContextForm.setError(name as never, { type: 'server', message: err.message })
+      })
+    },
   })
 
   // Combined validator — SectionPage's "Speichern und weiter" calls this

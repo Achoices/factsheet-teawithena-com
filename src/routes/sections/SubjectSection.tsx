@@ -3,8 +3,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { subjectSchema, type SubjectFormData } from '../../lib/factSheetSchema'
 import { useFactSheetAutosave } from '../../hooks/useFactSheetAutosave'
-import { saveFactSheetSection } from '../../lib/factSheetSave'
+import { useSaveFactSheetSection } from '../../lib/factSheetSave'
 import { useSetSectionValidator } from '../../lib/sectionValidationContext'
+import { zodPathToRhfName } from '../../lib/zodPathToRhfName'
 import { TextInput, Textarea } from '../../design-system/components/Input'
 
 const EMPTY: SubjectFormData = {
@@ -30,10 +31,17 @@ export function SubjectSection() {
   // watch() returns the live form values; useFactSheetAutosave debounces on
   // content change and pushes status into AutosaveStatusContext.
   const watched = form.watch()
+  const save = useSaveFactSheetSection()
   useFactSheetAutosave<SubjectFormData>({
     sectionId: 'subject',
     data: watched,
-    saveFunction: saveFactSheetSection,
+    saveFunction: save,
+    onValidationError: (errors) => {
+      errors.forEach((err) => {
+        const name = zodPathToRhfName(err.path)
+        if (name) form.setError(name as never, { type: 'server', message: err.message })
+      })
+    },
   })
 
   // STEP 3.2: register a validator so SectionPage's "Speichern und weiter"

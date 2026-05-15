@@ -8,6 +8,7 @@ import { AlreadySubmittedPage } from './routes/AlreadySubmittedPage'
 import { NotFoundPage } from './routes/NotFoundPage'
 import { ErrorPage } from './routes/ErrorPage'
 import { SectionPage } from './routes/SectionPage'
+import { SubmittedPage } from './routes/SubmittedPage'
 
 /**
  * Root route at `/` — magic-link landing.
@@ -73,6 +74,7 @@ function App() {
         <Route path="/form/:sectionId" element={<SectionPage />} />
         <Route path="/expired" element={<ExpiredPage locale={locale} />} />
         <Route path="/already-submitted" element={<AlreadySubmittedPage locale={locale} />} />
+        <Route path="/submitted" element={<SubmittedPage locale={locale} />} />
         <Route path="/not-found" element={<NotFoundPage locale={locale} />} />
         <Route path="/error" element={<ErrorPage locale={locale} />} />
         <Route path="*" element={<NotFoundPage locale={locale} />} />
