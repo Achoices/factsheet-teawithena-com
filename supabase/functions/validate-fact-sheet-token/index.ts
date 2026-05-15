@@ -73,7 +73,8 @@ serve(async (req) => {
     .from('interviews')
     .select(
       'interview_code, interviewee_names, original_language, ' +
-      'fact_sheet_status, fact_sheet_token_expires_at, fact_sheet_submitted_at',
+      'fact_sheet_status, fact_sheet_token_expires_at, fact_sheet_submitted_at, ' +
+      'biographical_facts',
     )
     .eq('fact_sheet_token', token)
     .maybeSingle()
@@ -134,6 +135,12 @@ serve(async (req) => {
         interview_code: interview.interview_code,
         interviewee_first_name: firstName,
         language,
+        // Load-path fix (Step 6 follow-up 2026-05-15): the React form
+        // mounts with biographical_facts as initial state. Returning it
+        // here keeps the load on the same round-trip as token validation.
+        // Per-section denormalizers (denormalizeSection.ts) convert
+        // canonical YearField/YearRange/etc. back to form-state strings.
+        biographical_facts: interview.biographical_facts ?? null,
       },
     },
     200,

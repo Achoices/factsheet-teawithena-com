@@ -3,9 +3,11 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { subjectSchema, type SubjectFormData } from '../../lib/factSheetSchema'
 import { useFactSheetAutosave } from '../../hooks/useFactSheetAutosave'
+import { useFactSheetInitialData } from '../../hooks/useFactSheetInitialData'
 import { useSaveFactSheetSection } from '../../lib/factSheetSave'
 import { useSetSectionValidator } from '../../lib/sectionValidationContext'
 import { zodPathToRhfName } from '../../lib/zodPathToRhfName'
+import { denormalizeSubject } from '../../lib/denormalizeSection'
 import { TextInput, Textarea } from '../../design-system/components/Input'
 
 const EMPTY: SubjectFormData = {
@@ -21,9 +23,10 @@ const EMPTY: SubjectFormData = {
 }
 
 export function SubjectSection() {
+  const initialValues = useFactSheetInitialData('subject', denormalizeSubject, EMPTY)
   const form = useForm<SubjectFormData>({
     resolver: zodResolver(subjectSchema),
-    defaultValues: EMPTY,
+    defaultValues: initialValues,
     mode: 'onBlur',
   })
   const { register, formState: { errors } } = form

@@ -15,6 +15,11 @@ export interface ValidationResult {
     interview_code: string
     interviewee_first_name: string
     language: 'de' | 'en'
+    /** Load-path: server returns the full biographical_facts JSONB so
+     * section forms can initialize with prior data via
+     * denormalizeSection. null when the record has never been saved.
+     * Keyed by section_id (subject / father / mother / ... / health). */
+    biographical_facts: Record<string, unknown> | null
   }
   submitted_at?: string
 }

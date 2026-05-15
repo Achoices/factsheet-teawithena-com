@@ -3,7 +3,9 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { residencesSchema, type ResidencesFormData } from '../../lib/factSheetSchema'
 import { useFactSheetAutosave } from '../../hooks/useFactSheetAutosave'
+import { useFactSheetInitialData } from '../../hooks/useFactSheetInitialData'
 import { useSaveFactSheetSection } from '../../lib/factSheetSave'
+import { denormalizeResidences } from '../../lib/denormalizeSection'
 import { zodPathToRhfName } from '../../lib/zodPathToRhfName'
 import { useSetSectionValidator } from '../../lib/sectionValidationContext'
 import { TextInput } from '../../design-system/components/Input'
@@ -26,9 +28,10 @@ const EMPTY_INITIAL: ResidencesFormData = { entries: [EMPTY_ENTRY] }
 // touch the legacy key at all.
 
 export function ResidencesSection() {
+  const initialValues = useFactSheetInitialData('residences', denormalizeResidences, EMPTY_INITIAL)
   const form = useForm<ResidencesFormData>({
     resolver: zodResolver(residencesSchema),
-    defaultValues: EMPTY_INITIAL,
+    defaultValues: initialValues,
     mode: 'onBlur',
   })
 

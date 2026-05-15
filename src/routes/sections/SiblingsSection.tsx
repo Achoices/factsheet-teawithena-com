@@ -3,7 +3,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { siblingsSchema, type SiblingsFormData } from '../../lib/factSheetSchema'
 import { useFactSheetAutosave } from '../../hooks/useFactSheetAutosave'
+import { useFactSheetInitialData } from '../../hooks/useFactSheetInitialData'
 import { useSaveFactSheetSection } from '../../lib/factSheetSave'
+import { denormalizeSiblings } from '../../lib/denormalizeSection'
 import { zodPathToRhfName } from '../../lib/zodPathToRhfName'
 import { useSetSectionValidator } from '../../lib/sectionValidationContext'
 import { TextInput, Textarea } from '../../design-system/components/Input'
@@ -14,9 +16,10 @@ const EMPTY: SiblingsFormData = {
 }
 
 export function SiblingsSection() {
+  const initialValues = useFactSheetInitialData('siblings', denormalizeSiblings, EMPTY)
   const form = useForm<SiblingsFormData>({
     resolver: zodResolver(siblingsSchema),
-    defaultValues: EMPTY,
+    defaultValues: initialValues,
     mode: 'onBlur',
   })
 

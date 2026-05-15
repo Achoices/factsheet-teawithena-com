@@ -3,7 +3,9 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { relationshipsSchema, type RelationshipsFormData } from '../../lib/factSheetSchema'
 import { useFactSheetAutosave } from '../../hooks/useFactSheetAutosave'
+import { useFactSheetInitialData } from '../../hooks/useFactSheetInitialData'
 import { useSaveFactSheetSection } from '../../lib/factSheetSave'
+import { denormalizeRelationships } from '../../lib/denormalizeSection'
 import { zodPathToRhfName } from '../../lib/zodPathToRhfName'
 import { useSetSectionValidator } from '../../lib/sectionValidationContext'
 import { TextInput, RadioGroup } from '../../design-system/components/Input'
@@ -58,9 +60,10 @@ const DISSOLUTION_TYPE_OPTIONS = [
 // 'ongoing' regardless of form state — semantic truth wins over user input.
 
 export function RelationshipsSection() {
+  const initialValues = useFactSheetInitialData('relationships', denormalizeRelationships, EMPTY_INITIAL)
   const form = useForm<RelationshipsFormData>({
     resolver: zodResolver(relationshipsSchema),
-    defaultValues: EMPTY_INITIAL,
+    defaultValues: initialValues,
     mode: 'onBlur',
   })
 

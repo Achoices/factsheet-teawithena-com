@@ -23,9 +23,11 @@
 // 422 so callers can map field-level errors back to RHF setError).
 
 import { useCallback } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { supabase } from './supabase'
 import { useFactSheetToken } from './factSheetTokenContext'
 import { normalizeForSave } from './normalizeSection'
+import type { ValidationResult } from '../hooks/useTokenValidation'
 
 // ── Error types ─────────────────────────────────────────────────────
 
@@ -118,17 +120,48 @@ async function invokeWithRetry(body: Record<string, unknown>): Promise<SaveRespo
  */
 export function useSaveFactSheetSection() {
   const token = useFactSheetToken()
+  const queryClient = useQueryClient()
   return useCallback(
     async (sectionId: string, data: unknown): Promise<void> => {
       const normalized = normalizeForSave(sectionId, data)
       const response = await invokeWithRetry({ token, section_id: sectionId, responses: normalized })
-      if (response.ok) return
+      if (response.ok) {
+        // LOAD-PATH SYNC (Step 6 follow-up 2026-05-15): mirror the saved
+        // normalized payload into the validate query cache so re-mounting
+        // any section (navigating away and back) sees fresh server-aligned
+        // state instead of the stale snapshot from the initial validate
+        // call. Without this, switching from Subject (edited) → Father →
+        // back-to-Subject would re-init Subject from cache (still showing
+        // pre-edit state), and the user's next keystroke would silently
+        // overwrite their previous autosave.
+        queryClient.setQueryData<ValidationResult>(
+          ['validate-token', token],
+          (old) => {
+            if (!old?.interview) return old
+            const currentFacts =
+              old.interview.biographical_facts && typeof old.interview.biographical_facts === 'object'
+                ? old.interview.biographical_facts
+                : {}
+            return {
+              ...old,
+              interview: {
+                ...old.interview,
+                biographical_facts: {
+                  ...currentFacts,
+                  [sectionId]: normalized,
+                },
+              },
+            }
+          },
+        )
+        return
+      }
       if (response.reason === 'validation_failed' && response.errors) {
         throw new FactSheetValidationError(sectionId, response.errors)
       }
       throw new Error(`save-fact-sheet rejected: ${response.reason}`)
     },
-    [token],
+    [token, queryClient],
   )
 }
 

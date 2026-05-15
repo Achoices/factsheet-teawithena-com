@@ -8,7 +8,9 @@ import {
   type FamilyContextFormData,
 } from '../../lib/factSheetSchema'
 import { useFactSheetAutosave } from '../../hooks/useFactSheetAutosave'
+import { useFactSheetInitialData } from '../../hooks/useFactSheetInitialData'
 import { useSaveFactSheetSection } from '../../lib/factSheetSave'
+import { denormalizeFather, denormalizeFamilyContext } from '../../lib/denormalizeSection'
 import { useSetSectionValidator } from '../../lib/sectionValidationContext'
 import { zodPathToRhfName } from '../../lib/zodPathToRhfName'
 import { TextInput, Textarea, RadioGroup } from '../../design-system/components/Input'
@@ -34,15 +36,17 @@ const INFLUENCE_OPTIONS = [
 ]
 
 export function FatherSection() {
+  const initialFather = useFactSheetInitialData('father', denormalizeFather, EMPTY_FATHER)
   const fatherForm = useForm<FatherFormData>({
     resolver: zodResolver(fatherSchema),
-    defaultValues: EMPTY_FATHER,
+    defaultValues: initialFather,
     mode: 'onBlur',
   })
 
+  const initialFamilyContext = useFactSheetInitialData('family_context', denormalizeFamilyContext, EMPTY_FAMILY_CONTEXT)
   const familyContextForm = useForm<FamilyContextFormData>({
     resolver: zodResolver(familyContextSchema),
-    defaultValues: EMPTY_FAMILY_CONTEXT,
+    defaultValues: initialFamilyContext,
     mode: 'onBlur',
   })
 

@@ -3,8 +3,10 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motherSchema, type MotherFormData } from '../../lib/factSheetSchema'
 import { useFactSheetAutosave } from '../../hooks/useFactSheetAutosave'
+import { useFactSheetInitialData } from '../../hooks/useFactSheetInitialData'
 import { useSaveFactSheetSection } from '../../lib/factSheetSave'
 import { zodPathToRhfName } from '../../lib/zodPathToRhfName'
+import { denormalizeMother } from '../../lib/denormalizeSection'
 import { useSetSectionValidator } from '../../lib/sectionValidationContext'
 import { TextInput } from '../../design-system/components/Input'
 
@@ -17,9 +19,10 @@ const EMPTY_MOTHER: MotherFormData = {
 }
 
 export function MotherSection() {
+  const initialValues = useFactSheetInitialData('mother', denormalizeMother, EMPTY_MOTHER)
   const form = useForm<MotherFormData>({
     resolver: zodResolver(motherSchema),
-    defaultValues: EMPTY_MOTHER,
+    defaultValues: initialValues,
     mode: 'onBlur',
   })
 

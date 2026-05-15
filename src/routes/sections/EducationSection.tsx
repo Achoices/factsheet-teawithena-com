@@ -3,7 +3,9 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { educationSchema, type EducationFormData } from '../../lib/factSheetSchema'
 import { useFactSheetAutosave } from '../../hooks/useFactSheetAutosave'
+import { useFactSheetInitialData } from '../../hooks/useFactSheetInitialData'
 import { useSaveFactSheetSection } from '../../lib/factSheetSave'
+import { denormalizeEducation } from '../../lib/denormalizeSection'
 import { zodPathToRhfName } from '../../lib/zodPathToRhfName'
 import { useSetSectionValidator } from '../../lib/sectionValidationContext'
 import { TextInput } from '../../design-system/components/Input'
@@ -12,9 +14,10 @@ const EMPTY_ENTRY = { institution: '', field: '', start_year: '', end_year: '' }
 const EMPTY_INITIAL: EducationFormData = { entries: [EMPTY_ENTRY] }
 
 export function EducationSection() {
+  const initialValues = useFactSheetInitialData('education', denormalizeEducation, EMPTY_INITIAL)
   const form = useForm<EducationFormData>({
     resolver: zodResolver(educationSchema),
-    defaultValues: EMPTY_INITIAL,
+    defaultValues: initialValues,
     mode: 'onBlur',
   })
 

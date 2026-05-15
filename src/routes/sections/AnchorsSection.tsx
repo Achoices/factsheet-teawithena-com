@@ -3,7 +3,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { anchorsSchema, type AnchorsFormData } from '../../lib/factSheetSchema'
 import { useFactSheetAutosave } from '../../hooks/useFactSheetAutosave'
+import { useFactSheetInitialData } from '../../hooks/useFactSheetInitialData'
 import { useSaveFactSheetSection } from '../../lib/factSheetSave'
+import { denormalizeAnchors } from '../../lib/denormalizeSection'
 import { zodPathToRhfName } from '../../lib/zodPathToRhfName'
 import { useSetSectionValidator } from '../../lib/sectionValidationContext'
 import { TextInput, Textarea } from '../../design-system/components/Input'
@@ -16,9 +18,10 @@ const EMPTY: AnchorsFormData = {
 }
 
 export function AnchorsSection() {
+  const initialValues = useFactSheetInitialData('anchors', denormalizeAnchors, EMPTY)
   const form = useForm<AnchorsFormData>({
     resolver: zodResolver(anchorsSchema),
-    defaultValues: EMPTY,
+    defaultValues: initialValues,
     mode: 'onBlur',
   })
 

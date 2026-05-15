@@ -3,7 +3,9 @@ import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { healthSchema, type HealthFormData } from '../../lib/factSheetSchema'
 import { useFactSheetAutosave } from '../../hooks/useFactSheetAutosave'
+import { useFactSheetInitialData } from '../../hooks/useFactSheetInitialData'
 import { useSaveFactSheetSection } from '../../lib/factSheetSave'
+import { denormalizeHealth } from '../../lib/denormalizeSection'
 import { zodPathToRhfName } from '../../lib/zodPathToRhfName'
 import { useSetSectionValidator } from '../../lib/sectionValidationContext'
 import { TextInput, Textarea, RadioGroup, CheckboxGroup } from '../../design-system/components/Input'
@@ -34,9 +36,10 @@ const COGNITIVE_ADAPTATION_OPTIONS = [
 ]
 
 export function HealthSection() {
+  const initialValues = useFactSheetInitialData('health', denormalizeHealth, EMPTY)
   const form = useForm<HealthFormData>({
     resolver: zodResolver(healthSchema),
-    defaultValues: EMPTY,
+    defaultValues: initialValues,
     mode: 'onBlur',
   })
 

@@ -3,8 +3,10 @@ import { useForm, type UseFormRegister, type FieldErrors } from 'react-hook-form
 import { zodResolver } from '@hookform/resolvers/zod'
 import { grandparentsSchema, type GrandparentsFormData } from '../../lib/factSheetSchema'
 import { useFactSheetAutosave } from '../../hooks/useFactSheetAutosave'
+import { useFactSheetInitialData } from '../../hooks/useFactSheetInitialData'
 import { useSaveFactSheetSection } from '../../lib/factSheetSave'
 import { zodPathToRhfName } from '../../lib/zodPathToRhfName'
+import { denormalizeGrandparents } from '../../lib/denormalizeSection'
 import { useSetSectionValidator } from '../../lib/sectionValidationContext'
 import { TextInput } from '../../design-system/components/Input'
 
@@ -74,9 +76,10 @@ function GrandparentEntry({
 }
 
 export function GrandparentsSection() {
+  const initialValues = useFactSheetInitialData('grandparents', denormalizeGrandparents, EMPTY)
   const form = useForm<GrandparentsFormData>({
     resolver: zodResolver(grandparentsSchema),
-    defaultValues: EMPTY,
+    defaultValues: initialValues,
     mode: 'onBlur',
   })
 

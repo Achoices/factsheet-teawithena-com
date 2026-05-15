@@ -3,7 +3,9 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { careerSchema, type CareerFormData } from '../../lib/factSheetSchema'
 import { useFactSheetAutosave } from '../../hooks/useFactSheetAutosave'
+import { useFactSheetInitialData } from '../../hooks/useFactSheetInitialData'
 import { useSaveFactSheetSection } from '../../lib/factSheetSave'
+import { denormalizeCareer } from '../../lib/denormalizeSection'
 import { zodPathToRhfName } from '../../lib/zodPathToRhfName'
 import { useSetSectionValidator } from '../../lib/sectionValidationContext'
 import { TextInput } from '../../design-system/components/Input'
@@ -48,9 +50,10 @@ const EMPTY_INITIAL: CareerFormData = { stations: [EMPTY_STATION] }
 //   form.reset({ stations: loaded.length > 0 ? loaded : [EMPTY_STATION] })
 
 export function CareerSection() {
+  const initialValues = useFactSheetInitialData('career', denormalizeCareer, EMPTY_INITIAL)
   const form = useForm<CareerFormData>({
     resolver: zodResolver(careerSchema),
-    defaultValues: EMPTY_INITIAL,
+    defaultValues: initialValues,
     mode: 'onBlur',
   })
 
