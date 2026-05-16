@@ -52,7 +52,7 @@ function GrandparentEntry({
         error={entryErrors?.name?.message}
         {...register(`${keyName}.name`)}
       />
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4 form-row--aligned-labels">
         <TextInput
           id={`${keyName}-birth_year`}
           label="Geburtsjahr"

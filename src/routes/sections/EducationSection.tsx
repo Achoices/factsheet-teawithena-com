@@ -90,7 +90,7 @@ export function EducationSection() {
             error={entryErrors?.[i]?.field?.message}
             {...register(`entries.${i}.field`)}
           />
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 form-row--aligned-labels">
             <TextInput
               id={`edu-${i}-start_year`}
               label="Von"

@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   fatherSchema,
@@ -93,7 +93,6 @@ export function FatherSection() {
 
   const fatherErrors = fatherForm.formState.errors
   const fcErrors = familyContextForm.formState.errors
-  const influenceValue = familyContextForm.watch('most_influential_parent')
 
   return (
     <div className="space-y-12">
@@ -112,7 +111,7 @@ export function FatherSection() {
           error={fatherErrors.place_of_origin?.message}
           {...fatherForm.register('place_of_origin')}
         />
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 form-row--aligned-labels">
           <TextInput
             id="father-birth_year"
             label="Geburtsjahr"
@@ -146,13 +145,29 @@ export function FatherSection() {
 
       {/* ---- Family context (inline) ---- */}
       <form className="space-y-6" noValidate>
-        <RadioGroup
-          id="family-most_influential_parent"
-          label="Welcher Elternteil hatte den größten Einfluss?"
-          options={INFLUENCE_OPTIONS}
-          value={influenceValue}
-          error={fcErrors.most_influential_parent?.message}
-          {...familyContextForm.register('most_influential_parent')}
+        {/* Controller (not register-spread) because RHF v7 only attaches a
+            ref to the first radio when register is spread on a RadioGroup;
+            clicks on the other options route to onChange but RHF can't
+            disambiguate which option is "current" without per-option refs,
+            so state never advances past the first selection. Controller
+            manages value directly via field.onChange — same pattern as
+            HealthSection (pacing) and RelationshipsSection (relationship_type
+            / dissolution_type) post-Phase 3.9. */}
+        <Controller
+          name="most_influential_parent"
+          control={familyContextForm.control}
+          render={({ field, fieldState }) => (
+            <RadioGroup
+              id="family-most_influential_parent"
+              label="Welcher Elternteil hatte den größten Einfluss?"
+              options={INFLUENCE_OPTIONS}
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              name={field.name}
+              error={fieldState.error?.message}
+            />
+          )}
         />
         <Textarea
           id="family-parent_relationship_note"

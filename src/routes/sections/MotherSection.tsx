@@ -60,7 +60,7 @@ export function MotherSection() {
         error={errors.place_of_origin?.message}
         {...form.register('place_of_origin')}
       />
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4 form-row--aligned-labels">
         <TextInput
           id="mother-birth_year"
           label="Geburtsjahr"

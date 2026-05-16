@@ -3,3 +3,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Layout helper: aligns side-by-side TextInput rows so the input boxes
+ * stay on the same row baseline even when one label wraps to two lines on
+ * mobile and the other doesn't. Apply to a parent <div> that contains
+ * two or more <TextInput> components, e.g. Geburtsjahr + Sterbejahr,
+ * Von + Bis, etc.
+ *
+ * Approach: reserve 2 label-lines of vertical real estate on every
+ * descendant .input-label inside the row. Single-line labels then have
+ * extra padding below, but the input boxes always align across the row.
+ *
+ * Scoped to year-pair rows post-bugfix 2026-05-16. Sibling rows that mix
+ * year + non-year (career, marriages, children) are NOT covered —
+ * symmetry is a year-pair concern.
+ * ───────────────────────────────────────────────────────────────────── */
+.form-row--aligned-labels .input-label {
+  min-height: 2.6em;
+}

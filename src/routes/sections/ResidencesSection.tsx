@@ -93,7 +93,7 @@ export function ResidencesSection() {
             error={entryErrors?.[i]?.country?.message}
             {...register(`entries.${i}.country`)}
           />
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 form-row--aligned-labels">
             <TextInput
               id={`residences-${i}-start_year`}
               label="Von"
